@@ -1,0 +1,63 @@
+<!--
+	-------表格列模版START--------------
+	使用说明：使用数组变量$grid
+	//为了防止多个 gridtable的引用，所有必须定义一个编号
+-->
+<div class="mborder">
+	{php $rand = rand(100,999);}
+	
+	{template 'Public/tools','tbar',$grid['tbar']}<!--工具条-->
+	
+	
+	<table width="100%" id="gridtable_{$rand}" class="gridtable" cellspacing="0" cellpadding="0">
+	<tr style="background:url(__PUBLIC__/images/header.gif);height:30px">
+		<td width="30"><div class="headtr" align="center"></div></td>
+		{if $grid['selcheck']}
+			<th nowrap><div class="headtr" align="center"><input class ="checkbox" onclick="js.sellall(this,'gridcheck')" type="checkbox"></th>
+		{/if}
+		{loop $grid['headarr'] $key $header}
+		{php $orderlx	= str_replace(''.$key.'-', '', $grid['gridorder']);$orderlx1	= ($orderlx=='desc')?'asc':'desc';}
+		<th nowrap {if strpos($grid['gridorder'], ''.$key.'-') === 0}onclick="js.gridorder('{$key}','{$orderlx1}')" style="cursor:pointer"{/if}>
+			<div class="headtr" align="{if $header['align']}{$header['align']}{else}center{/if}">{$header['text']}
+			{if $header['sortable']}
+				{if strpos($grid['gridorder'], ''.$key.'-') ===0}
+					<img src="__PUBLIC__/images/{$orderlx}.gif" align="absmiddle" style="margin-left:5px">
+				{else}
+					<img class="asc" onclick="js.gridorder('{$key}','asc')" title="升序" src="__PUBLIC__/images/asc1.gif">
+					<img title="降序" onclick="js.gridorder('{$key}','desc')" class="desc" src="__PUBLIC__/images/desc1.gif">
+				{/if}
+			{/if}
+			</div>
+		</th>
+		{/loop}
+	</tr>
+	
+	{loop $grid['rows'] $k $rows}
+	<tr trbool="true" dataid="{$rows['id']}">
+		<td align="right">{php echo($k+1)}</td>
+		{if $grid['selcheck']}
+			<td align="center"><input class="checkbox" name="gridcheck" value="{$rows['id']}" type="checkbox"></td>
+		{/if}
+		{loop $grid['headarr'] $key $header}
+			<td align="{if $header['align']}{$header['align']}{else}center{/if}">
+			{if $header['checkshow']}
+				<font color="{$header['checkshow'][$rows[$key]][1]}">{$header['checkshow'][$rows[$key]][0]}</font>
+			{else}
+				{$rows[$key]}
+			{/if}
+			</td>
+		{/loop}
+	</tr>
+	{/loop}
+	</table>
+</div>
+
+<!--分页的-->
+{template 'Public/paging','paging',$grid['paging']}
+<script type="text/javascript">
+{if $grid['notselect']}
+$("#gridtable_{$rand} tr[trbool='true']").attr('trbool','');
+{/if}
+</script>
+
+<!--表格列模版END-->

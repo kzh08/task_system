@@ -1,0 +1,312 @@
+{template 'Public/header'}
+<script type="text/javascript">
+var mkdir	= '{php echo date('Y-m-d')}'; //上传到的日期文件夹
+var callback= '{$callback}';//回传函数处理
+var maxup	= {$maxup};//最多上传数(0不限制)
+var uptype	= '{$uptype}';//上传类型
+var savepath= '';
+var up={
+	reader:false,
+	filearr:[],
+	bool:false,
+	upsize:1024*2034, //每次发送1M(超过1M则不能上传成功)
+	maxsize:{$maxsize},//(MB)最大的
+	moi:0,
+	wcarr:[],
+	init:function()
+	{
+		try{
+			this.reader	= new FileReader();
+		}catch(e){
+			$('body').prepend('<div style="color:red;padding:2px;border:1px #dddddd solid;margin:5px">对不起，您的浏览器内核不支持本上传功能，请使用IE10+，火狐，Opera，谷歌浏览器</div>');
+		}
+		var str	= '单个文件不能大于'+this.formatsize(this.maxsize*1024*1024)+'; ';
+		if(uptype !='*' && uptype!=''){
+			str+='限制类型为:'+uptype+'; ';
+		}
+		if(maxup != 0){
+			str+='最多可添加'+maxup+'个文件，已添加<span id="yitianje">0</span>个';
+		}
+		$('#upmsgshow').html(str);
+		if(!this.reader){
+			get('addbtn').disabled=true;
+			get('clearbtn').disabled=true;
+			get('startbtn').disabled=true;
+		}
+		this.obj=$('#upfile');
+	},
+	add:function()
+	{
+		if(!this.reader||this.bool)return false;
+		if(maxup != 0){
+			if(this.gsize()>=maxup)return false;
+		}
+		document.myform.inputfile.click();
+		return false;
+	},
+	rand:function()
+	{
+		var rand	= ''+js.now('YmdHis')+''+parseInt(Math.random()*99999)+'';
+		return rand;
+	},
+	change:function(o){
+		this.change1(0);
+	},
+	change1:function(oi)
+	{
+		var o		= get('inputfilemul').files;
+		if(maxup != 0){
+			if(this.gsize()>=maxup){
+				setTimeout('document.myform.reset()',500);
+				this.setxu();
+				return;
+			}
+		}
+		
+		if(oi>=o.length){
+			setTimeout('document.myform.reset()',500);
+			this.setxu();
+			return;
+		}
+		
+		var file		= o[oi];
+		var olen		= this.filearr.length;
+		var filesize	= file.size;
+		var filesizecn	= this.formatsize(filesize);
+		var filename	= file.name;
+		var fileext		= filename.substr(filename.lastIndexOf('.')+1).toLowerCase();
+		var filetype	= file.type;
+		
+		//判断类型是否符合
+		if(uptype !='*' && uptype!=''){
+			var ssuptype	= ','+uptype+',';
+			if(ssuptype.toLowerCase().indexOf(','+fileext+',')<0){
+				js.msg('danger','文件['+filename+']类型不符合，请选择['+uptype+']的文件类型');
+				up.change1(oi+1);
+				return false;
+			}
+		}
+		
+		
+		if(filesize>this.maxsize*1024*1024){
+			js.msg('danger','文件['+filename+']不能超过'+this.formatsize(this.maxsize*1024*1024)+'，当前文件大小'+filesizecn+'');
+			up.change1(oi+1);
+			return false;
+		}
+		
+		this.moi++;
+		for(var i=0;i<olen;i++){
+			if(this.filearr[i].filename==filename && this.filearr[i].filesize==filesize){
+				js.msg('danger','文件['+filename+']已添加了');
+				up.change1(oi+1);
+				return false;
+			}
+		}
+		var s='<div class="mdiv" upload="true">'+
+		'<div class="div01"><span></span>'+fileext+'：'+filename+'</div>'+
+		'<div class="div02">'+filesizecn+'</div>'+
+		'<div class="div03" id="updeng'+this.moi+'">初始化文件...</div>'+
+		'</div>';
+		this.obj.append(s);
+		var arr={filename:filename,filesize:filesize,filesizecn:filesizecn,filetype:filetype,fileext:fileext,newfile:this.rand(),xu:this.moi};
+		this.reader.readAsDataURL(file);
+		this.bool	= true;
+		this.reader.onload=function(){
+			var cont= this.result;
+			cont	= cont.substr(cont.indexOf(',')+1);	
+			arr.filecout=cont;
+			up.filearr.push(arr);
+			$('#updeng'+up.moi+'').html('等待上传...<a href="javascript:" temp="del" onclick="return up.del(this,'+olen+')">×</a>');
+			up.bool	= false;
+			up.change1(oi+1);
+		}
+	},
+	del:function(o,oi)
+	{
+		$(o).parent().parent().remove();
+		this.filearr[oi]=false;
+		this.setxu();
+		return false;
+	},
+	formatsize:function(size)
+	{
+		var arr = new Array('Byte', 'KB', 'MB', 'GB', 'TB', 'PB');
+		var e	= Math.floor(Math.log(size)/Math.log(1024));
+		var fs	= size/Math.pow(1024,Math.floor(e));
+		return js.float(fs)+' '+arr[e];
+	},
+	gsize:function()
+	{
+		var olen	= this.filearr.length;
+		var ol	= 0;
+		for(var i=0;i<olen;i++){
+			if(this.filearr[i])ol++;
+		}
+		return ol;
+	},
+	upload:function()
+	{
+		if(this.bool)return false;
+		var olen	= this.filearr.length;
+		this.uparr	= [];
+		var ol	= 0;
+		for(var i=0;i<olen;i++){
+			if(this.filearr[i]){
+				this.uparr.push(this.filearr[i]);
+				ol++;
+			}
+		}
+		if(ol==0){
+			js.msg('danger','请添加上传文件!');
+			return false;
+		}
+		
+		this.filearr=[];
+		get('addbtn').disabled=true;
+		get('clearbtn').disabled=true;
+		get('startbtn').disabled=true;
+		this.bool	= true;
+		$("a[temp='del']").remove();
+		$('#prou').show();
+		$('#proushow').html('等待上传('+ol+'/<font id="nowupspan">0</font>)(<font id="allbili">0</font>%) ['+this.formatsize(this.upsize)+'/S]...');
+		$('#proudiv').css('width','0%');
+		this.start(0);
+		return false;
+	},
+	start:function(oi)
+	{
+		if(oi==this.uparr.length){
+			$('#proushow').html('上传完成');
+			get('addbtn').disabled=false;
+			get('clearbtn').disabled=false;
+			get('startbtn').disabled=false;
+			this.bool	= false;
+			if(callback!=''){
+				try{opener[callback](this.wcarr)}catch(e){}
+			}
+			if(callback.indexOf('autoclose')>0)window.close();
+			return false;
+		}
+		this.suarr	= this.uparr[oi];
+		this.updengid= 'updeng'+this.suarr.xu+'';
+		$('#'+this.updengid+'').html('<font color=#ff6600>正在上传(<span id="bilishow">0</span>%)...</font>');
+		var len		= this.suarr.filecout.length;
+		this.maxsend= Math.ceil(len/this.upsize);
+		$('#nowupspan').html(oi+1);
+		this.jdt(0);
+		this.starts(0,oi);
+	},
+	starts:function(oj,oi)
+	{
+		if(oj==this.maxsend){
+			$('#'+this.updengid+'').html('<font color=green>上传成功</font>');
+			this.start(oi+1);
+			return false;
+		}
+		
+		var bil		= js.float(((oj+1)/this.maxsend)*100);
+		this.jdt(bil);
+		$('#bilishow').html(bil);
+		var arr		= this.suarr;
+		var cont	= arr.filecout;
+		
+		var sendcont= cont.substr(oj*this.upsize,this.upsize);
+		//arr.sendcont= sendcont;
+		var data	= {sendcont:sendcont,filename:arr.filename,maxsend:this.maxsend,sendci:oj,filetype:arr.filetype,fileext:arr.fileext,filesize:arr.filesize,filesizecn:arr.filesizecn,mkdir:mkdir,newfile:arr.newfile,savepath:savepath};
+		$.ajax({
+			url:''+APP+'Xyupload/upload/rnd/'+Math.random()+'',
+			data:data,
+			type:'post',
+			success:function(da){
+				var result	= js.decode(da);
+				if(!result.success){
+					$('#'+up.updengid+'').html('<font color=red>上传出错</font>');
+				}else{
+					setTimeout('up.starts('+(oj+1)+','+oi+')',5);
+					if(result.msg!='0'){
+						up.wcarr.push({id:result.msg,filename:arr.filename,filetype:arr.filetype,fileext:arr.fileext,filesize:arr.filesize,filesizecn:arr.filesizecn,mkdir:mkdir,newfile:arr.newfile,filepath:result.filepath});
+					}
+				}
+			},
+			error:function(){
+				$('#'+up.updengid+'').html('<font color=red>上传失败</font>');
+			}
+		});
+	},
+	jdt:function(bl)
+	{
+		$('#allbili').html(bl);
+		$('#proudiv').css('width',''+bl+'%');
+	},
+	unload:function()
+	{
+		//window.returnValue='问';
+		return false;
+	},
+	clear:function()
+	{
+		this.filearr=[];
+		this.obj.html('');
+	},
+	
+	//设置序号
+	setxu:function()
+	{
+		var o	= this.obj.find('span');
+		for(var i=0;i<o.length;i++)o[i].innerHTML=''+(i+1)+'、 ';
+		$('#yitianje').html(''+i+'');
+	}
+}
+window.onbeforeunload=function(){
+	if(up.bool)return '文件正在上传，确定要关闭页面吗？';
+}
+</script>
+<style type="text/css">
+.mdiv{ border-bottom:1px #cccccc solid; height:25px; overflow:hidden}
+.mdiv div{ float:left; height:25px; line-height:22px; overflow:hidden; padding:0px 3px}
+.div01{ width:55%;text-align:left;border-right:1px #cccccc solid;}
+.div02{ width:15%; text-align:center;border-right:1px #cccccc solid;}
+.div03{ width:25%;text-align:left}
+#prou{overflow:hidden; background-color:#ffffff; margin:5px 0px; border:1px #666 solid;padding:0px; text-align:left;font-size:12px; position:relative; height:22px;}
+#prou span{ left:5px; position:absolute; top:0px}
+#proudiv{ position:absolute; left:0px; top:0px; height:22px; overflow:hidden; background-color:#09F;width:0%}
+button{ cursor:pointer}
+</style>
+</head>
+<body style="padding:10px;" onLoad="up.init()">
+<center>
+<form name="myform" style="display:none"><input type="file" name="inputfile" id="inputfilemul" multiple onChange="up.change(this)"></form>
+<div align="left" style="padding:3px"></div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    
+    <td align="left"><input type="button" class="button button-sml" id="addbtn" onClick="up.add()" value="＋添加文件">&nbsp; <input type="button" class="button button-sml" id="clearbtn" onClick="up.clear()" value="－清除所有文件">&nbsp; <input type="button" class="button button-sml" value="关闭" onClick="window.close()"></td>
+    <td align="right"><input type="button" id="startbtn" class="button button-sml" onClick="up.upload()" value="开始上传"></td>
+  </tr>
+</table>
+<div style="overflow:hidden; height:8px"></div>
+<div id="prou" style="display:none"><div id="proudiv"></div><span id="proushow">等待上传...</span></div>
+<div class="mdiv" style="background-color:#eeeeee">
+<div class="div01">文件名</div>
+<div class="div02">大小</div>
+<div class="div03">状态</div>
+</div>
+<div id="upfile">
+</div>
+<div id="upmsgshow" style="padding:3px;text-align:left;color:#777777"></div>
+</center>
+</body>
+</html>	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</body>
+</html>

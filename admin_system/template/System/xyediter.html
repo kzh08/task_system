@@ -1,0 +1,47 @@
+<html>
+<body>
+<script type="text/javascript">
+var get		= function(id){return document.getElementById(id)};
+var bool 	= false;
+var extlist = '|jpg|png|gif|bmp|jpeg|';
+var editci	= 0;
+var upload  = '{$_REQUEST['upload']}';
+var files	= {$files};
+function change(o)
+{
+	var uptype	= extlist;
+	var val		= o.value;
+	var type	= val.substr(val.lastIndexOf('.')+1).toLowerCase();
+	uptype		=uptype.toLowerCase();
+	if(uptype!='*'){
+		var acuptype	= '|'+uptype+'|';
+		if(uptype.indexOf('|'+type+'|')<0){
+			alert('只能选择的文件类型：'+uptype+'');
+			get('form').reset();
+			return false;
+		}
+	}
+	get('form').action='__APP__/System/xyediter/upload/true';
+	get('form').submit();	
+}
+function clickup(oi,ext)
+{
+	editci = oi;
+	if(ext)extlist=ext;
+	get('file').click();
+}
+function initbody()
+{
+	if(upload=='true'){
+		parent.xyediterarray[editci].uploadback(files.files[0]);
+	}
+}
+
+</script>
+<body onload="initbody();" style="padding:10px;overflow:auto" scroll="auto">
+<a id="show"></a>
+<form action="" id="form" method="post" enctype="multipart/form-data">
+<input name="fileupload[]" id="file" type="file" onchange="change(this)" style="width:250px; cursor:pointer; border:1px #dddddd solid; height:21px; font-size:12px;">
+</form>
+</body>
+</html>

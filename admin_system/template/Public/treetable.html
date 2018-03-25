@@ -1,0 +1,55 @@
+<!--一级-->
+{php $t=0;}
+{loop $tree $k $rows}
+	{php $t++;}
+	{php $pid1 = '1['.$rows['id'].']';}
+	{php $level = 1;//级别}
+	{php $pid 	= $pid1;}
+	{template 'Public/treetable_items'}
+	
+	{if $rows['children']}
+		{loop $rows['children'] $k $rows}
+			{php $t++;}
+			{php $pid2 = $pid1.'_2['.$rows['id'].']';}
+			{php $level = 2;}
+			{php $pid 	= $pid2;}
+			{template 'Public/treetable_items'}
+		
+			{if $rows['children']}
+				{loop $rows['children'] $k $rows}
+					{php $t++;}
+					{php $pid3 = $pid2.'_3['.$rows['id'].']';}
+					{php $level = 3;}
+					{php $pid 	= $pid3;}
+					{template 'Public/treetable_items'}
+					
+					<!--四级-->
+					{if $rows['children']}
+						{loop $rows['children'] $k $rows}
+							{php $t++;}
+							{php $pid4 = $pid3.'_4['.$rows['id'].']';}
+							{php $level = 4;}
+							{php $pid 	= $pid4;}
+							{template 'Public/treetable_items'}
+							
+							<!--五级-->
+							{if $rows['children']}
+								{loop $rows['children'] $k $rows}
+									{php $t++;}
+									{php $pid5 = $pid4.'_5['.$rows['id'].']';}
+									{php $level = 5;}
+									{php $pid 	= $pid5;}
+									{template 'Public/treetable_items'}
+								{/loop}
+							{/if}
+							
+						{/loop}
+					{/if}					
+					
+				{/loop}
+			{/if}
+			
+		{/loop}
+	{/if}
+	
+{/loop}

@@ -1,0 +1,92 @@
+{template 'Public/header'}
+<script type="text/javascript">
+var bool = false
+
+//保存
+function save()
+{
+	if(bool)return false
+	
+	var opass	= form('oldPassPost').value;
+	var pass	= form('passwordPost').value;
+	var pass1	= form('newPassPost').value;
+	
+	if(opass==''){
+		js.msg('danger','旧密码不能为空');
+		form('passoldPost').focus();
+		return false;
+	}
+
+	if(pass.length <4){
+		js.msg('danger','新密码不能少于4个字符');
+		form('passwordPost').focus();
+		return false;
+	}
+	if(!/[a-zA-Z]{1,}/.test(pass) || !/[0-9]{1,}/.test(pass)){
+		js.msg('danger','新密码必须使用字母+数字');
+		form('passwordPost').focus();
+		return false;
+	}
+
+	if(opass==pass){
+		js.msg('danger','新密码不能和旧密码相同');
+		form('passwordPost').focus();
+		return false;
+	}
+	
+	if(pass!=pass1){
+		js.msg('danger','确认密码不一致');
+		form('newPassPost').focus();
+		return false;
+	}
+
+	var data	= js.getformdata();
+	bool =true;
+	form('submitbtn').disabled=true;
+	$.post('__URL__/savePass',data,function(da){
+		if(da=='success'){
+			js.msg('success','密码修改成功');
+			form('submitbtn').value='修改成功';
+		}else{
+			if(da=='')da='修改失败';
+			bool	= false;
+			form('submitbtn').disabled=false;
+			js.msg('danger',da);
+		}
+	})
+}
+</script>
+<body style="padding:10px;overflow:auto" scroll="auto">
+
+		<form name="myform">
+		<input type="hidden" value="{$id}" name="idPost">
+		<table cellspacing="0" width="550" align="center" cellpadding="0">
+		<tr>
+			<td  colspan="2"><div class="stitle">修改密码</div></td>
+		</tr>
+		<tr>
+			<td width="150" align="right" height="50">旧密码：</td>
+			<td><input style="width:250px" name="oldPassPost" type="password" class="form-control"></td>
+		</tr>
+		
+		<tr>
+			<td align="right" height="50">新密码：</td>
+			<td><input style="width:250px" name="passwordPost" type="password" class="form-control"></td>
+		</tr>
+		
+		<tr>
+			<td align="right" height="50">确认密码：</td>
+			<td><input style="width:250px" name="newPassPost" type="password" class="form-control"></td>
+		</tr>
+		
+		<tr>
+		<td height="70" align="right"></td>
+		<td><input class="button button-big" name="submitbtn" onclick="save()" value="修改" type="button">
+		</td>
+		</tr>
+		
+		</table>
+		</form>
+	
+</body>
+</html>

@@ -1,0 +1,170 @@
+ body {
+     overflow: hidden;
+ }
+ 
+ .logo {
+     text-align: center;
+ }
+ 
+ .logo img {
+     margin-bottom: 50px;
+ }
+ 
+ ::-webkit-input-placeholder {
+     color: #9da4a2;
+ }
+ 
+ .circle1 {
+     position: absolute;
+     width: 20px;
+     height: 20px;
+     bottom: 5px;
+     right: 5px;
+     display: none;
+ }
+ 
+ .email-wrap input {
+     font-family: monaco;
+     background-color: transparent;
+     border: none;
+     color: #fff;
+     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+     outline: none;
+     font-size: 18px;
+     word-spacing: 2px;
+ }
+ 
+ .pass-wrap input {
+     font-family: monaco;
+     position: relative;
+     background-color: transparent;
+     border: none;
+     color: #fff;
+     border-bottom: 1px solid rgba(255, 255, 255, .5);
+     outline: none;
+     font-size: 18px;
+     margin-top: 40px;
+     word-spacing: 2px;
+ }
+ 
+ .baby-login {
+     position: absolute;
+     left: 50%;
+     top: 50%;
+     transform: translate3d(-50%, -50%, 0);
+     -webkit-transform: translate3d(-50%, -50%, 0);
+ }
+ 
+ .mask {
+     position: absolute;
+     width: 100%;
+     height: 100%;
+     background-color: #000;
+     opacity: .618;
+ }
+ 
+ .baby-center {
+     position: absolute;
+     width: 100%;
+     height: 100%;
+ }
+ 
+ @-webkit-keyframes zoom {
+     0% {}
+     100% {
+         transform: scale(1.2);
+         -webkit-transform: scale(1.2);
+     }
+ }
+ 
+ @keyframes zoom {
+     0% {}
+     100% {
+         transform: scale(1.2);
+         -webkit-transform: scale(1.2);
+     }
+ }
+ 
+ @-webkit-keyframes wobble {
+     0% {
+         -webkit-transform: none;
+         transform: none;
+     }
+     15% {
+         -webkit-transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+         transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+     }
+     30% {
+         -webkit-transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+         transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+     }
+     45% {
+         -webkit-transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+         transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+     }
+     60% {
+         -webkit-transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+         transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+     }
+     75% {
+         -webkit-transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+         transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+     }
+     100% {
+         -webkit-transform: none;
+         transform: none;
+         opacity: 1;
+     }
+ }
+ 
+ @keyframes wobble {
+     0% {
+         -webkit-transform: none;
+         transform: none;
+     }
+     15% {
+         -webkit-transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+         transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+     }
+     30% {
+         -webkit-transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+         transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+     }
+     45% {
+         -webkit-transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+         transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+     }
+     60% {
+         -webkit-transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+         transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+     }
+     75% {
+         -webkit-transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+         transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+     }
+     100% {
+         -webkit-transform: none;
+         transform: none;
+         opacity: 1;
+     }
+ }
+ 
+ .bg {
+     position: absolute;
+     width: 100%;
+     animation: 30s 0s zoom ease-in-out infinite forwards alternate;
+     -webkit-animation: 30s 0s zoom ease-in-out infinite forwards alternate;
+ }
+ 
+ .wobble {
+     animation: 1s 0s wobble ease-in-out 2 forwards normal;
+     -webkit-animation: 1s 0s wobble ease-in-out 2 forwards normal;
+ }
+ 
+ .show {
+     display: block;
+ }
+ 
+ .hide {
+     display: none;
+ }

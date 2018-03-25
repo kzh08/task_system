@@ -1,0 +1,160 @@
+{php $importheader='highcharts'}
+{template 'Public/header'}
+<script type="text/javascript">
+var bool = false;
+//删除
+function clickDel(event)
+{
+	
+	var s= js.getchecked('gridcheck_log');
+	if(s=='')js.msg('danger','没有选中行记录');
+	if(s==''||bool)return false;
+	js.confirm('确定要删除选中的记录吗？',"clickDelEnsure('"+s+"')",event);
+	return false;
+}
+
+function clickDelEnsure(aid)
+{
+	bool	= true;
+	$.post('__URL__/delLog',{id:aid},function(da){
+		if(da=='success'){
+			location.reload();
+			js.msg('success','删除成功');
+		}else{
+			js.msg('danger',da);
+			bool= false;
+		}
+	});
+}
+
+function loginChart()
+{
+	js.tanbody('show','近10天日志数量',730,320,{html:'<div  id="myChart" style="height:300px;">加载中...</div>'});
+	$.get('__URL__/showLastTenDayLog',function(da){
+	
+		var arr	= js.decode(da);
+		var cate=[],data=[];
+		for(var i=arr.length-1;i>=0;i--){
+			cate.push(arr[i].name);
+			data.push(arr[i].value);
+		}
+
+		$(parent.get('myChart')).highcharts({
+			title: {
+				text: '近10天日志数量'
+			},
+			xAxis: {
+				categories: cate,
+				title: {
+					text: '日期'
+				}
+			},
+			yAxis: {
+				min:0,
+				title: {
+					text: '数量'
+				},
+				plotLines: [{
+					value: 0,
+					width: 1,
+					color: '#808080'
+				}]
+			},
+			tooltip: {
+				valueSuffix: ''
+			},
+			legend: {
+				layout: 'vertical',
+				align: 'right',
+				verticalAlign: 'middle',
+				enabled:false,
+				borderWidth: 0
+			},
+			series: [{
+				name: '数量',
+				data: data
+			}]
+		});	
+			
+		
+	});
+}
+</script>
+<body style="padding:10px;overflow:auto" scroll="auto">
+
+
+
+
+<!--人员表格列输出  -->
+<div class="mborder">
+	
+	<!--工具栏的-->
+	<div class="stitle">
+		<table width="100%" cellspacing="0" cellpadding="0">
+		<tr><td align="left">
+		
+		<table id="tools_678" border="0" cellspacing="0" cellpadding="0" height="34">
+		<tr>
+			
+			<td width="5"></td>
+			<td><input temp="tbarsou678" class="barinput" placeholder="类型" style="width:130px;" id="param0_type" value="{$_REQUEST['param0_type']}" ></td>
+			
+			<td width="5"></td>
+			<td><input temp="tbarsou678" class="barinput" placeholder="描述" style="width:150px;" id="param0_memo" value="{$_REQUEST['param0_memo']}" ></td>
+			
+			
+			
+			
+			<td width="5"></td>
+			<td><input class="button button-sml" onclick="js.gridsou('678')" type="button" value="查询"></td>
+		
+		</tr>
+		</table>
+		
+		</td>
+		<td align="right">
+		<input class="button button-sml" onclick="loginChart()" value="日志图表" type="button">	&nbsp;
+		<input class="button button-sml" onclick="clickDel(event)" value="选中删除" type="button">	&nbsp;
+
+		
+		</td>
+		</tr>
+		</table>
+	</div>
+	<!--工具条-->
+	
+	<table width="100%" id="gridtable_262" class="gridtable" cellspacing="0" cellpadding="0">
+	<tr style="height:30px">
+		<td width="30"></td>
+		<th><div class="headtr" align="center"><input onclick="js.sellall(this,'gridcheck_log')" class ="checkbox" type="checkbox"></th>
+		<th><div class="headtr" align="center" sortable="true_level">等级</div></th>
+		<th><div class="headtr" align="center" sortable="true_type">类型</div></th>
+		<th><div class="headtr" align="center" sortable="true_memo">描述</div></th>
+		<th><div class="headtr" align="center" sortable="true_indate">时间</div></th>
+	</tr>
+	
+	{loop $grid['rows'] $k $rows}
+	<tr dataid="{$rows['id']}">
+		<td align="right">{php echo($k+1)}</td>
+		<td align="center"><input name="gridcheck_log" value="{$rows['id']}" class ="checkbox" type="checkbox"></td>
+		<td align="center">{$rows['level']}</td>
+		<td align="center">{$rows['type']}</td>
+		<td align="center">{$rows['memo']}</td>
+		<td align="center">{$rows['indate']}</td>
+	</tr>
+	{/loop}
+	
+	
+
+
+</table>
+
+</div>
+
+{template 'Public/paging'}	
+
+
+
+
+</body>
+</html>
