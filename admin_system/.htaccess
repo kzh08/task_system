@@ -1,7 +1,0 @@
-<IfModule mod_rewrite.c> 
-RewriteEngine on 
-RewriteRule ^log/(.*)$ 1 [QSA,PT,L]
-RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^/]*)/([^/]*)/?(.*)$ index.php?xycontroller=$1&xyaction=$2&xyparam=$3 [QSA,PT,L]
-</IfModule>

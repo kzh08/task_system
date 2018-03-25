@@ -1,8 +1,0 @@
-.rockmenu{ position:absolute;display:none; z-index:9999;box-shadow:2px 2px 2px #cccccc;}
-.rockmenuli{border:1px #cccccc solid; background-color:#ffffff; left:0px; top:0px; padding:0px}
-.rockmenulijt{ padding:0px; text-align:center}
-.rockmenu ul{list-style-type:none; padding:0px;margin:0px}
-.rockmenu li{ list-style-type:none; padding:5px 5px; font-size:14px; cursor:pointer; text-align:left;}
-.rockmenu li.li01{ background-color:#dddddd;color:#368ee0}
-.rockmenu li span{ font-size:10px; color:#aaaaaa}
-.rockmenu li.li01 span{color:#368ee0}
